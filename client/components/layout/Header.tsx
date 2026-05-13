@@ -17,21 +17,13 @@ export default function Header() {
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          className="flex items-center hover:opacity-80 transition-opacity"
         >
-          <div className="w-8 h-8 bg-navy rounded-sm flex items-center justify-center">
-            <span className="text-white font-montserrat font-bold text-lg">
-              L
-            </span>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-montserrat font-700 text-navy text-sm">
-              LIV
-            </span>
-            <span className="font-montserrat font-light text-sand text-xs -mt-1">
-              CAPITAL
-            </span>
-          </div>
+          <img
+            src="/images/logo_liv_color.png"
+            alt="LIV Capital"
+            className="h-20 w-auto"
+          />
         </Link>
 
         {/* Desktop Navigation */}

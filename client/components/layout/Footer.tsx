@@ -30,22 +30,14 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <div
-              className="flex items-center gap-2 mb-4 cursor-default select-none"
+              className="mb-4 cursor-default select-none"
               onClick={handleLogoClick}
             >
-              <div className="w-8 h-8 bg-sand rounded-sm flex items-center justify-center">
-                <span className="text-navy font-montserrat font-bold text-lg">
-                  L
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-montserrat font-700 text-sand text-sm">
-                  LIV
-                </span>
-                <span className="font-montserrat font-light text-stone-warm text-xs -mt-1">
-                  CAPITAL
-                </span>
-              </div>
+              <img
+                src="/images/logo_liv_white.png"
+                alt="LIV Capital"
+                className="h-12 w-auto"
+              />
             </div>
             <p className="text-stone-warm text-sm font-montserrat font-light">
               Arquitectura urbana contemporánea

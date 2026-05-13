@@ -129,22 +129,14 @@ export default function UnderConstruction({ config, onBypass }: Props) {
       <div className="relative z-10 pt-8 flex justify-center">
         <button
           onClick={handleLogoClick}
-          className="flex items-center gap-3 opacity-60 hover:opacity-90 transition-opacity focus:outline-none"
+          className="opacity-60 hover:opacity-90 transition-opacity focus:outline-none"
           aria-label="LIV CAPITAL"
         >
-          <div className="w-7 h-7 bg-sand flex items-center justify-center flex-shrink-0">
-            <span className="text-navy font-montserrat font-extrabold text-sm">
-              L
-            </span>
-          </div>
-          <div className="flex flex-col leading-none">
-            <span className="font-montserrat font-bold text-white text-xs tracking-[0.2em]">
-              LIV
-            </span>
-            <span className="font-montserrat font-light text-sand text-[10px] tracking-[0.25em]">
-              CAPITAL
-            </span>
-          </div>
+          <img
+            src="/images/logo_liv_white.png"
+            alt="LIV Capital"
+            className="h-20 w-auto"
+          />
         </button>
       </div>
 
