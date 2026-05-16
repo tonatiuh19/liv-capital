@@ -76,15 +76,21 @@ try {
     $lastDay  = date('Y-m-t', strtotime($firstDay));
 
     $ovStmt = $pdo->prepare(
-        "SELECT override_date, start_time, is_blocked
+        "SELECT override_date, start_time, end_time, is_blocked
          FROM visit_slot_overrides
          WHERE override_date BETWEEN :s AND :e AND is_blocked = 1"
     );
     $ovStmt->execute([':s' => $firstDay, ':e' => $lastDay]);
-    $blockedFullDays = [];
+    $blockedFullDays   = []; // date => true
+    $blockedTimeRanges = []; // date => [{start,end}, ...]
     foreach ($ovStmt->fetchAll() as $ov) {
         if ($ov['start_time'] === null) {
             $blockedFullDays[$ov['override_date']] = true;
+        } else {
+            $blockedTimeRanges[$ov['override_date']][] = [
+                'start' => $ov['start_time'],
+                'end'   => $ov['end_time'],
+            ];
         }
     }
 
@@ -120,6 +126,18 @@ try {
         foreach ($templatesByDay[$dow] as $tpl) {
             $slotTs = strtotime($dateStr . ' ' . $tpl['start_time']);
             if ($slotTs < $minTs) continue; // too soon
+
+            // Skip if a time-range override covers this slot (overlap check)
+            if (isset($blockedTimeRanges[$dateStr])) {
+                $blocked = false;
+                foreach ($blockedTimeRanges[$dateStr] as $range) {
+                    if ($tpl['start_time'] < $range['end'] && $tpl['end_time'] > $range['start']) {
+                        $blocked = true;
+                        break;
+                    }
+                }
+                if ($blocked) continue;
+            }
 
             $key   = $dateStr . '|' . $tpl['id'];
             $avail = max(0, (int)$tpl['max_capacity'] - ($counts[$key] ?? 0));

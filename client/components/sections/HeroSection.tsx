@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const headlines = [
   "Diseñado para vivir mejor.",
@@ -44,105 +45,25 @@ export default function HeroSection() {
   return (
     <section className="relative h-screen w-full overflow-hidden bg-white">
       <div className="h-full flex flex-col md:flex-row">
-        {/* Left Side - Image/Visual */}
+        {/* Left Side - Video */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          className="hidden md:flex md:w-1/2 relative overflow-hidden"
+          className="hidden md:flex md:w-1/2 relative overflow-hidden bg-navy"
         >
-          {/* Architectural gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-navy via-navy/90 to-sand/20" />
+          {/* Video */}
+          <video
+            src="/videos/master.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
 
-          {/* Decorative architectural elements */}
-          <svg
-            className="absolute inset-0 w-full h-full opacity-20"
-            preserveAspectRatio="none"
-          >
-            <defs>
-              <pattern
-                id="grid"
-                width="40"
-                height="40"
-                patternUnits="userSpaceOnUse"
-              >
-                <path
-                  d="M 40 0 L 0 0 0 40"
-                  fill="none"
-                  stroke="#D9B99B"
-                  strokeWidth="0.5"
-                />
-              </pattern>
-              <linearGradient
-                id="accentGrad"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="100%"
-              >
-                <stop offset="0%" stopColor="#D9B99B" />
-                <stop offset="100%" stopColor="#D9B99B" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-
-            {/* Grid pattern */}
-            <rect width="100%" height="100%" fill="url(#grid)" />
-
-            {/* Geometric shapes */}
-            <circle
-              cx="20%"
-              cy="30%"
-              r="150"
-              fill="none"
-              stroke="url(#accentGrad)"
-              strokeWidth="2"
-              opacity="0.4"
-            />
-            <circle
-              cx="80%"
-              cy="70%"
-              r="200"
-              fill="none"
-              stroke="url(#accentGrad)"
-              strokeWidth="2"
-              opacity="0.3"
-            />
-            <rect
-              x="15%"
-              y="15%"
-              width="60%"
-              height="60%"
-              fill="none"
-              stroke="#D9B99B"
-              strokeWidth="1.5"
-              opacity="0.5"
-            />
-            <line
-              x1="0"
-              y1="0"
-              x2="100%"
-              y2="100%"
-              stroke="url(#accentGrad)"
-              strokeWidth="1"
-              opacity="0.3"
-            />
-          </svg>
-
-          {/* Floating card accent */}
-          <motion.div
-            animate={{ y: [0, 20, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-12 left-12 right-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-sm p-8 md:p-6 lg:p-8 z-10"
-          >
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-montserrat font-extrabold text-sand mb-2">
-                125+
-              </div>
-              <p className="text-white font-montserrat font-light text-sm">
-                Unidades de lujo disponibles
-              </p>
-            </div>
-          </motion.div>
+          {/* Subtle dark overlay so the card stays legible */}
+          <div className="absolute inset-0 bg-navy/30" />
         </motion.div>
 
         {/* Right Side - Content */}
@@ -257,12 +178,12 @@ export default function HeroSection() {
               Explorar Modelos
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </a>
-            <a
-              href="#contacto"
+            <Link
+              to="/agendar-visita"
               className="flex items-center justify-center gap-2 px-8 py-4 border-2 border-navy text-navy font-montserrat font-medium rounded-sm hover:bg-navy hover:text-white transition-all duration-300"
             >
               Agendar Visita
-            </a>
+            </Link>
           </motion.div>
 
           {/* Additional Info */}

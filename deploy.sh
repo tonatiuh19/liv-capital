@@ -29,6 +29,14 @@ echo "→ Copying PHP API files (excluding _config.php)..."
 mkdir -p "$DEPLOY_DIR/api"
 find public/api -maxdepth 1 -name "*.php" ! -name "_config.php" -exec cp {} "$DEPLOY_DIR/api/" \;
 
+echo "→ Copying PHP admin API files..."
+mkdir -p "$DEPLOY_DIR/api/admin"
+find public/api/admin -maxdepth 1 -name "*.php" ! -name "_config.php" -exec cp {} "$DEPLOY_DIR/api/admin/" \;
+
+echo "→ Copying PHP cron files..."
+mkdir -p "$DEPLOY_DIR/api/cron"
+find public/api/cron -maxdepth 1 -name "*.php" -exec cp {} "$DEPLOY_DIR/api/cron/" \;
+
 echo ""
 echo "⚠️  IMPORTANT: public/api/_config.php is NOT included in the deploy folder."
 echo "   You must manually upload _config.php to public_html/api/ on the server."

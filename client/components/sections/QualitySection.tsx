@@ -10,7 +10,8 @@ const qualityPoints = [
   },
   {
     title: "Materiales Premium",
-    description: "Acabados de procedencia internacional con garantía de durabilidad",
+    description:
+      "Acabados de procedencia internacional con garantía de durabilidad",
   },
   {
     title: "Control de Calidad",
@@ -18,7 +19,8 @@ const qualityPoints = [
   },
   {
     title: "Sostenibilidad",
-    description: "Certificaciones ambientales y sistemas de eficiencia energética",
+    description:
+      "Certificaciones ambientales y sistemas de eficiencia energética",
   },
   {
     title: "Soporte Post-Venta",
@@ -88,7 +90,10 @@ export default function QualitySection() {
             Confianza en cada detalle
           </h3>
           <p className="text-lg text-stone-warm font-montserrat font-light max-w-3xl mx-auto mb-8">
-            LIV CAPITAL es más que un proyecto inmobiliario. Es un compromiso con tus expectativas de calidad, durabilidad y lujo. Cada departamento es construido con los más altos estándares, respaldado por profesionales comprometidos y materiales de clase mundial.
+            LIV CAPITAL es más que un proyecto inmobiliario. Es un compromiso
+            con tus expectativas de calidad, durabilidad y lujo. Cada
+            departamento es construido con los más altos estándares, respaldado
+            por profesionales comprometidos y materiales de clase mundial.
           </p>
           <p className="text-sand font-montserrat font-medium">
             Tu inversión merece el mejor cuidado. Eso es lo que ofrecemos.

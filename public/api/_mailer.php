@@ -95,7 +95,7 @@ function smtp_send_mail(
     $expect($cmd("DATA"),                     '354');
 
     // ── Build message ─────────────────────────────────────────────────────────
-    $boundary   = '----LIV_BOUNDARY_' . bin2hex(random_bytes(8));
+    $boundary    = '----LIV_BOUNDARY_' . bin2hex(random_bytes(8));
     $fromEncoded = '=?UTF-8?B?' . base64_encode($fromName) . '?=';
     $toEncoded   = '=?UTF-8?B?' . base64_encode($to_name)  . '?=';
     $subEncoded  = '=?UTF-8?B?' . base64_encode($subject)  . '?=';
@@ -108,24 +108,32 @@ function smtp_send_mail(
     $headers .= "Subject: {$subEncoded}\r\n";
     $headers .= "Message-ID: {$msgId}\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: multipart/mixed; boundary=\"{$boundary}\"\r\n";
     $headers .= "X-Mailer: LIV-CAPITAL-PHP\r\n";
 
-    $body  = "--{$boundary}\r\n";
-    $body .= "Content-Type: text/html; charset=UTF-8\r\n";
-    $body .= "Content-Transfer-Encoding: base64\r\n\r\n";
-    $body .= chunk_split(base64_encode($html)) . "\r\n";
+    if (empty($attachments)) {
+        // Simple HTML-only email — no multipart wrapper needed
+        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+        $headers .= "Content-Transfer-Encoding: base64\r\n";
+        $body = chunk_split(base64_encode($html));
+    } else {
+        $headers .= "Content-Type: multipart/mixed; boundary=\"{$boundary}\"\r\n";
 
-    foreach ($attachments as $att) {
-        $b64name  = '=?UTF-8?B?' . base64_encode($att['name']) . '?=';
-        $body .= "--{$boundary}\r\n";
-        $body .= "Content-Type: {$att['mime']}; name=\"{$b64name}\"\r\n";
-        $body .= "Content-Transfer-Encoding: base64\r\n";
-        $body .= "Content-Disposition: attachment; filename=\"{$b64name}\"\r\n\r\n";
-        $body .= chunk_split(base64_encode($att['data'])) . "\r\n";
+        $body  = "--{$boundary}\r\n";
+        $body .= "Content-Type: text/html; charset=UTF-8\r\n";
+        $body .= "Content-Transfer-Encoding: base64\r\n\r\n";
+        $body .= chunk_split(base64_encode($html)) . "\r\n";
+
+        foreach ($attachments as $att) {
+            $b64name  = '=?UTF-8?B?' . base64_encode($att['name']) . '?=';
+            $body .= "--{$boundary}\r\n";
+            $body .= "Content-Type: {$att['mime']}; name=\"{$b64name}\"\r\n";
+            $body .= "Content-Transfer-Encoding: base64\r\n";
+            $body .= "Content-Disposition: attachment; filename=\"{$b64name}\"\r\n\r\n";
+            $body .= chunk_split(base64_encode($att['data'])) . "\r\n";
+        }
+
+        $body .= "--{$boundary}--\r\n";
     }
-
-    $body .= "--{$boundary}--\r\n";
 
     // Dot-stuffing: lines starting with "." must be doubled
     $message = $headers . "\r\n" . $body;

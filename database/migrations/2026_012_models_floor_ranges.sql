@@ -1,0 +1,11 @@
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Migration: 2026_012_models_floor_ranges  [SUPERSEDED]
+--
+-- This migration only SET floor_min/floor_max on the old placeholder models
+-- (studio, suite-1, suite-2, suite-3, penthouse). Those models are deleted
+-- and replaced by migration 2026_013_models_full_reseed, which includes the
+-- correct floor ranges directly in its INSERT statements.
+--
+-- DO NOT run this migration — run 2026_013 instead.
+-- ─────────────────────────────────────────────────────────────────────────────
+

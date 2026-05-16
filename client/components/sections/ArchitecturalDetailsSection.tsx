@@ -1,13 +1,6 @@
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import {
-  Waves,
-  Wind,
-  Sun,
-  Apple,
-  Zap,
-  Trees,
-} from "lucide-react";
+import { Waves, Wind, Sun, Apple, Zap, Trees } from "lucide-react";
 
 const features = [
   {
@@ -55,7 +48,7 @@ export default function ArchitecturalDetailsSection() {
   });
 
   return (
-    <section className="py-20 md:py-32 px-6 bg-stone-light">
+    <section className="py-20 md:py-32 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
         {/* Title */}
         <motion.div

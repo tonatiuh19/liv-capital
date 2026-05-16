@@ -32,3 +32,7 @@ define('SMTP_FROM_NAME',  'LIV CAPITAL');             // optional; defaults to '
 define('APP_ENV',     'production');          // development | production
 define('APP_URL',     'https://livcapitalgdl.mx');
 define('CORS_ORIGIN', 'https://livcapitalgdl.mx'); // Use '*' only in development
+
+// ─── Cron secret ─────────────────────────────────────────────────────────────
+// Random key to protect cron endpoints. Generate with: openssl rand -hex 32
+define('CRON_SECRET', 'change-me-random-secret-for-cron');

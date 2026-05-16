@@ -155,6 +155,14 @@ export default function Footer() {
             © 2024 LIV CAPITAL por Capital Urbano. Todos los derechos
             reservados.
           </p>
+          <div className="text-center mt-3">
+            <Link
+              to="/admin/login"
+              className="text-white/10 hover:text-white/20 text-xs font-montserrat transition-colors"
+            >
+              Admin
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

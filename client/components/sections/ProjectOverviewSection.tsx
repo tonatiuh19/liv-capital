@@ -1,6 +1,7 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Building2, Lightbulb, MapPin } from "lucide-react";
+import { Building2, Lightbulb, MapPin, Play, X } from "lucide-react";
+import { useRef, useState } from "react";
 
 const stats = [
   { number: "8", label: "Plantas", suffix: "" },
@@ -38,11 +39,25 @@ export default function ProjectOverviewSection() {
     triggerOnce: true,
   });
 
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const lightboxVideoRef = useRef<HTMLVideoElement>(null);
+
+  const openLightbox = () => {
+    setLightboxOpen(true);
+    // Let the DOM render before playing
+    setTimeout(() => lightboxVideoRef.current?.play(), 50);
+  };
+
+  const closeLightbox = () => {
+    lightboxVideoRef.current?.pause();
+    setLightboxOpen(false);
+  };
+
   return (
     <section
       id="proyecto"
       ref={ref}
-      className="py-20 md:py-32 px-6 bg-white"
+      className="py-20 md:py-32 px-6 bg-stone-light"
     >
       <div className="max-w-7xl mx-auto">
         {/* Title */}
@@ -61,50 +76,72 @@ export default function ProjectOverviewSection() {
 
         {/* Image and Description Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20 items-center">
-          {/* Image */}
+          {/* Video thumbnail */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
             transition={{ duration: 0.8 }}
-            className="relative h-96 md:h-full rounded-sm overflow-hidden bg-gradient-to-br from-navy/20 to-sand/10 border border-stone-warm/30"
+            className="relative h-96 md:h-full min-h-[380px] rounded-sm overflow-hidden bg-navy cursor-pointer group"
+            onClick={openLightbox}
           >
-            {/* Architectural visualization placeholder */}
-            <svg
-              className="w-full h-full"
-              preserveAspectRatio="xMidYMid slice"
-              viewBox="0 0 600 400"
-            >
-              <defs>
-                <linearGradient id="projGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#2E3447" />
-                  <stop offset="50%" stopColor="#D9B99B" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#2E3447" stopOpacity="0.8" />
-                </linearGradient>
-              </defs>
+            <video
+              src="/videos/recorrido.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            {/* Dark overlay */}
+            <div className="absolute inset-0 bg-navy/30 group-hover:bg-navy/20 transition-colors duration-300" />
 
-              {/* Building silhouette */}
-              <rect width="600" height="400" fill="url(#projGrad)" />
-
-              {/* Building structure */}
-              <g opacity="0.6">
-                <rect x="50" y="80" width="500" height="280" fill="none" stroke="#D9B99B" strokeWidth="2" />
-                {/* Floors */}
-                {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-                  <line key={`floor-${i}`} x1="50" y1={110 + i * 35} x2="550" y2={110 + i * 35} stroke="#D9B99B" strokeWidth="1" opacity="0.4" />
-                ))}
-                {/* Windows grid */}
-                {[0, 1, 2, 3, 4, 5].map((col) =>
-                  [0, 1, 2, 3, 4, 5, 6, 7].map((row) => (
-                    <rect key={`window-${col}-${row}`} x={75 + col * 80} y={95 + row * 35} width="20" height="20" fill="none" stroke="#D9B99B" opacity="0.5" />
-                  ))
-                )}
-              </g>
-
-              {/* Rooftop garden indication */}
-              <circle cx="300" cy="60" r="40" fill="#D9B99B" opacity="0.3" />
-              <text x="300" y="65" textAnchor="middle" fill="#2E3447" fontSize="12" fontWeight="bold">ROOFTOP</text>
-            </svg>
+            {/* Play button */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.97 }}
+                className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center"
+              >
+                <Play className="w-7 h-7 text-white fill-white translate-x-0.5" />
+              </motion.div>
+            </div>
           </motion.div>
+
+          {/* Lightbox */}
+          <AnimatePresence>
+            {lightboxOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={closeLightbox}
+                className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              >
+                <motion.div
+                  initial={{ scale: 0.93, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.93, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative w-full max-w-5xl"
+                >
+                  <video
+                    ref={lightboxVideoRef}
+                    src="/videos/recorrido.mp4"
+                    controls
+                    playsInline
+                    className="w-full rounded-sm"
+                  />
+                  <button
+                    onClick={closeLightbox}
+                    className="absolute top-3 right-3 bg-white/10 hover:bg-white/20 text-white p-2 rounded-sm transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Description */}
           <motion.div
@@ -116,10 +153,17 @@ export default function ProjectOverviewSection() {
               Vivienda Vertical de Lujo
             </h3>
             <p className="text-lg text-text-secondary font-montserrat font-light leading-relaxed mb-6">
-              LIV CAPITAL es un desarrollo residencial contemporáneo que reimagina la vivienda urbana de clase mundial. Ubicado en el corazón de Guadalajara, el proyecto combina arquitectura sofisticada con espacios optimizados y amenidades de lujo.
+              LIV CAPITAL es un desarrollo residencial contemporáneo que
+              reimagina la vivienda urbana de clase mundial. Ubicado en el
+              corazón de Guadalajara, el proyecto combina arquitectura
+              sofisticada con espacios optimizados y amenidades de lujo.
             </p>
             <p className="text-lg text-text-secondary font-montserrat font-light leading-relaxed mb-8">
-              Con ocho plantas de vivienda vertical, más de 125 departamentos disponibles y 12 amenidades premium, LIV CAPITAL ofrece una experiencia de vida integral. Cada unidad está diseñada con materiales de procedencia internacional, acabados premium y sistemas inteligentes que elevan tu estándar de calidad.
+              Con ocho plantas de vivienda vertical, más de 125 departamentos
+              disponibles y 12 amenidades premium, LIV CAPITAL ofrece una
+              experiencia de vida integral. Cada unidad está diseñada con
+              materiales de procedencia internacional, acabados premium y
+              sistemas inteligentes que elevan tu estándar de calidad.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -172,7 +216,9 @@ export default function ProjectOverviewSection() {
               Arquitectura Contemporánea
             </h3>
             <p className="text-text-secondary font-montserrat font-light">
-              Diseño de vanguardia que respeta la escala urbana, integrándose armónicamente con el entorno y elevando el perfil arquitectónico de la zona.
+              Diseño de vanguardia que respeta la escala urbana, integrándose
+              armónicamente con el entorno y elevando el perfil arquitectónico
+              de la zona.
             </p>
           </div>
 
@@ -184,7 +230,8 @@ export default function ProjectOverviewSection() {
               Espacios Inteligentes
             </h3>
             <p className="text-text-secondary font-montserrat font-light">
-              Cada departamento está optimizado para maximizar funcionalidad, luz natural, ventilación cruzada y confort climático todo el año.
+              Cada departamento está optimizado para maximizar funcionalidad,
+              luz natural, ventilación cruzada y confort climático todo el año.
             </p>
           </div>
 
@@ -196,7 +243,9 @@ export default function ProjectOverviewSection() {
               Ubicación Privilegiada
             </h3>
             <p className="text-text-secondary font-montserrat font-light">
-              Acceso inmediato a restaurantes, comercio, entretenimiento y servicios de clase mundial. Conectividad integral con toda la ciudad.
+              Acceso inmediato a restaurantes, comercio, entretenimiento y
+              servicios de clase mundial. Conectividad integral con toda la
+              ciudad.
             </p>
           </div>
         </motion.div>

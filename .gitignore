@@ -29,3 +29,7 @@ dist-ssr
 deploy/
 .builder/
 public/api/_config.php
+
+# Large binary files — persist on server between deploys, upload manually via FTP/cPanel
+public/uploads/
+public/videos/
