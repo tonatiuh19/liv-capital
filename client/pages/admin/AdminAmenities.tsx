@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -7,12 +7,13 @@ import {
   X,
   Sparkles,
   Upload,
-  Link2,
   Loader2,
   ImageOff,
   Images,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { assetUrl } from "@/lib/assetUrl";
+import { getAmenityIcon } from "@/lib/amenityIcons";
 import {
   fetchAdminAmenities,
   createAmenity,
@@ -62,17 +63,28 @@ export default function AdminAmenities() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Amenity | null>(null);
   const [form, setForm] = useState<AmenityForm>(emptyForm);
-  const [urlInput, setUrlInput] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [localPreview, setLocalPreview] = useState("");
 
   useEffect(() => {
     dispatch(fetchAdminAmenities());
   }, []);
 
+  const clearPending = () => {
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    setPendingFile(null);
+    setLocalPreview("");
+  };
+
+  const closeModal = () => {
+    clearPending();
+    setModalOpen(false);
+  };
+
   const openCreate = () => {
     setEditTarget(null);
     setForm(emptyForm);
-    setUrlInput("");
+    clearPending();
     setModalOpen(true);
   };
 
@@ -91,18 +103,28 @@ export default function AdminAmenities() {
       is_active: a.is_active === 1 || (a.is_active as unknown as boolean),
       display_order: String(a.display_order ?? 0),
     });
-    setUrlInput(a.image_url ?? "");
+    clearPending();
     setModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    let imageUrl = form.image_url;
+    if (pendingFile) {
+      const result = await dispatch(uploadAmenityImage(pendingFile));
+      if (uploadAmenityImage.fulfilled.match(result)) {
+        imageUrl = result.payload;
+        clearPending();
+      } else {
+        return; // upload failed — don't save
+      }
+    }
     const payload = {
       ...form,
       is_active: form.is_active ? 1 : 0,
       show_in_gallery: form.show_in_gallery ? 1 : 0,
       display_order: parseInt(form.display_order) || 0,
-      image_url: form.image_url || null,
+      image_url: imageUrl || null,
       description: form.description || null,
       icon: form.icon || null,
       category: form.category || null,
@@ -113,24 +135,16 @@ export default function AdminAmenities() {
     } else {
       await dispatch(createAmenity(payload));
     }
-    setModalOpen(false);
+    closeModal();
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const result = await dispatch(uploadAmenityImage(file));
-    if (uploadAmenityImage.fulfilled.match(result)) {
-      setForm((f) => ({ ...f, image_url: result.payload }));
-      setUrlInput(result.payload);
-    }
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    setPendingFile(file);
+    setLocalPreview(URL.createObjectURL(file));
     e.target.value = "";
-  };
-
-  const applyUrlInput = () => {
-    if (urlInput.trim()) {
-      setForm((f) => ({ ...f, image_url: urlInput.trim() }));
-    }
   };
 
   const handleDelete = (a: Amenity) => {
@@ -209,7 +223,7 @@ export default function AdminAmenities() {
                   className="relative rounded-sm overflow-hidden aspect-[4/3]"
                 >
                   <img
-                    src={a.image_url!}
+                    src={assetUrl(a.image_url)}
                     alt={a.name}
                     className="w-full h-full object-cover"
                   />
@@ -246,7 +260,7 @@ export default function AdminAmenities() {
             {/* Image */}
             {a.image_url ? (
               <img
-                src={a.image_url}
+                src={assetUrl(a.image_url)}
                 alt={a.name}
                 className="w-full h-40 object-cover"
               />
@@ -297,11 +311,18 @@ export default function AdminAmenities() {
                 </p>
               )}
 
-              {a.icon && (
-                <p className="font-montserrat text-xs text-stone-gray/60 mb-2">
-                  Ícono: <span className="font-mono">{a.icon}</span>
-                </p>
-              )}
+              {a.icon &&
+                (() => {
+                  const Icon = getAmenityIcon(a.icon);
+                  return (
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Icon className="w-3.5 h-3.5 text-stone-gray/60" />
+                      <span className="font-montserrat text-xs text-stone-gray/60 font-mono">
+                        {a.icon}
+                      </span>
+                    </div>
+                  );
+                })()}
 
               <div className="flex gap-2 pt-2 border-t border-stone-warm/20">
                 {a.type === "amenity" && (
@@ -349,7 +370,7 @@ export default function AdminAmenities() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
             onClick={(e) => {
-              if (e.target === e.currentTarget) setModalOpen(false);
+              if (e.target === e.currentTarget) closeModal();
             }}
           >
             <motion.div
@@ -363,7 +384,7 @@ export default function AdminAmenities() {
                   {editTarget ? "Editar amenidad" : "Nueva amenidad"}
                 </h3>
                 <button
-                  onClick={() => setModalOpen(false)}
+                  onClick={closeModal}
                   className="text-stone-gray hover:text-navy"
                 >
                   <X className="w-5 h-5" />
@@ -461,15 +482,23 @@ export default function AdminAmenities() {
                   </div>
                   <div>
                     <label className="label-admin">Ícono Lucide</label>
-                    <input
-                      type="text"
-                      value={form.icon}
-                      onChange={(e) =>
-                        setForm({ ...form, icon: e.target.value })
-                      }
-                      className="input-admin font-mono"
-                      placeholder="waves"
-                    />
+                    <div className="flex items-center gap-2">
+                      {(() => {
+                        const Icon = getAmenityIcon(form.icon);
+                        return (
+                          <Icon className="w-5 h-5 text-navy/50 shrink-0" />
+                        );
+                      })()}
+                      <input
+                        type="text"
+                        value={form.icon}
+                        onChange={(e) =>
+                          setForm({ ...form, icon: e.target.value })
+                        }
+                        className="input-admin font-mono flex-1"
+                        placeholder="waves"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -478,18 +507,18 @@ export default function AdminAmenities() {
                   <label className="label-admin">Imagen</label>
 
                   {/* Preview */}
-                  {form.image_url && (
+                  {(localPreview || form.image_url) && (
                     <div className="relative mb-3 group">
                       <img
-                        src={form.image_url}
+                        src={localPreview || assetUrl(form.image_url)}
                         alt="Vista previa"
                         className="w-full h-36 object-cover rounded-sm border border-stone-warm/30"
                       />
                       <button
                         type="button"
                         onClick={() => {
+                          clearPending();
                           setForm((f) => ({ ...f, image_url: "" }));
-                          setUrlInput("");
                         }}
                         className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
@@ -498,47 +527,26 @@ export default function AdminAmenities() {
                     </div>
                   )}
 
-                  {/* Upload file */}
-                  <div className="flex gap-2 mb-2">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploading}
-                      className="flex items-center gap-2 text-sm font-montserrat px-3 py-2 border border-stone-warm/40 rounded-sm text-stone-gray hover:text-navy hover:border-navy/30 transition-colors disabled:opacity-50"
-                    >
-                      {uploading ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Upload className="w-4 h-4" />
-                      )}
-                      {uploading ? "Subiendo..." : "Subir archivo"}
-                    </button>
-                  </div>
-
-                  {/* URL input */}
                   <div className="flex gap-2">
                     <input
-                      type="url"
-                      value={urlInput}
-                      onChange={(e) => setUrlInput(e.target.value)}
+                      type="text"
+                      value={form.image_url}
+                      onChange={(e) =>
+                        setForm({ ...form, image_url: e.target.value })
+                      }
                       className="input-admin flex-1"
-                      placeholder="https://... o /uploads/amenities/..."
+                      placeholder="https://… o sube un archivo"
                     />
-                    <button
-                      type="button"
-                      onClick={applyUrlInput}
-                      className="flex items-center gap-1 px-3 py-2 border border-stone-warm/40 rounded-sm text-stone-gray hover:text-navy hover:border-navy/30 transition-colors text-sm font-montserrat"
-                    >
-                      <Link2 className="w-4 h-4" />
-                      Aplicar
-                    </button>
+                    <label className="shrink-0 cursor-pointer flex items-center gap-1 px-3 py-2 border border-stone-warm rounded-sm text-xs font-montserrat text-navy/70 hover:bg-stone-light">
+                      <Upload className="w-3.5 h-3.5" />
+                      Subir
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        className="hidden"
+                        onChange={handleImageSelect}
+                      />
+                    </label>
                   </div>
                 </div>
 
@@ -577,7 +585,7 @@ export default function AdminAmenities() {
                 <div className="flex gap-3 pt-2">
                   <button
                     type="button"
-                    onClick={() => setModalOpen(false)}
+                    onClick={closeModal}
                     className="flex-1 font-montserrat text-sm py-2.5 border border-stone-warm/40 rounded-sm text-stone-gray hover:text-navy"
                   >
                     Cancelar
@@ -587,7 +595,7 @@ export default function AdminAmenities() {
                     disabled={saving || uploading}
                     className="flex-1 font-montserrat text-sm py-2.5 bg-navy text-white rounded-sm hover:bg-opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
                   >
-                    {saving ? (
+                    {saving || uploading ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : null}
                     {editTarget ? "Guardar cambios" : "Crear amenidad"}

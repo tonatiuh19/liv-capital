@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -6,7 +6,6 @@ import {
   Trash2,
   X,
   Upload,
-  Link2,
   Loader2,
   ImageOff,
   Images,
@@ -22,23 +21,10 @@ import {
 } from "@/store/slices/adminGallerySlice";
 import { assetUrl } from "@/lib/assetUrl";
 
-const CATEGORY_OPTIONS = [
-  { value: "arquitectura", label: "Arquitectura" },
-  { value: "amenidades", label: "Amenidades" },
-  { value: "interiores", label: "Interiores" },
-] as const;
-
-const CATEGORY_LABELS: Record<string, string> = {
-  arquitectura: "Arquitectura",
-  amenidades: "Amenidades",
-  interiores: "Interiores",
-};
-
 interface GalleryForm {
   title: string;
   description: string;
   image_url: string;
-  category: string;
   display_order: string;
   is_active: boolean;
 }
@@ -47,7 +33,6 @@ const emptyForm: GalleryForm = {
   title: "",
   description: "",
   image_url: "",
-  category: "arquitectura",
   display_order: "0",
   is_active: true,
 };
@@ -59,18 +44,28 @@ export default function AdminGallery() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<AdminGalleryImage | null>(null);
   const [form, setForm] = useState<GalleryForm>(emptyForm);
-  const [urlInput, setUrlInput] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [localPreview, setLocalPreview] = useState("");
 
   useEffect(() => {
     dispatch(fetchAdminGallery());
   }, []);
 
+  const clearPending = () => {
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    setPendingFile(null);
+    setLocalPreview("");
+  };
+
+  const closeModal = () => {
+    clearPending();
+    setModalOpen(false);
+  };
+
   const openCreate = () => {
     setEditTarget(null);
     setForm(emptyForm);
-    setUrlInput("");
+    clearPending();
     setModalOpen(true);
   };
 
@@ -80,18 +75,28 @@ export default function AdminGallery() {
       title: img.title,
       description: img.description ?? "",
       image_url: img.image_url,
-      category: img.category,
       display_order: String(img.display_order ?? 0),
       is_active: img.is_active === 1,
     });
-    setUrlInput(img.image_url ?? "");
+    clearPending();
     setModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    let imageUrl = form.image_url;
+    if (pendingFile) {
+      const result = await dispatch(uploadGalleryFile(pendingFile));
+      if (uploadGalleryFile.fulfilled.match(result)) {
+        imageUrl = result.payload;
+        clearPending();
+      } else {
+        return; // upload failed — don’t save
+      }
+    }
     const payload = {
       ...form,
+      image_url: imageUrl,
       is_active: form.is_active ? 1 : 0,
       display_order: parseInt(form.display_order) || 0,
       description: form.description || null,
@@ -101,26 +106,16 @@ export default function AdminGallery() {
     } else {
       await dispatch(createGalleryImage(payload));
     }
-    setModalOpen(false);
+    closeModal();
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
-    const result = await dispatch(uploadGalleryFile(file));
-    setUploading(false);
-    if (uploadGalleryFile.fulfilled.match(result)) {
-      setForm((f) => ({ ...f, image_url: result.payload }));
-      setUrlInput(result.payload);
-    }
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    setPendingFile(file);
+    setLocalPreview(URL.createObjectURL(file));
     e.target.value = "";
-  };
-
-  const applyUrlInput = () => {
-    if (urlInput.trim()) {
-      setForm((f) => ({ ...f, image_url: urlInput.trim() }));
-    }
   };
 
   const handleDelete = (img: AdminGalleryImage) => {
@@ -202,9 +197,6 @@ export default function AdminGallery() {
                     {img.title}
                   </p>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-[10px] font-montserrat font-semibold px-1.5 py-0.5 rounded-full bg-navy/10 text-navy">
-                      {CATEGORY_LABELS[img.category] ?? img.category}
-                    </span>
                     <span className="font-montserrat text-xs text-stone-gray">
                       Orden: {img.display_order}
                     </span>
@@ -255,7 +247,9 @@ export default function AdminGallery() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setModalOpen(false)}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) closeModal();
+            }}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -271,7 +265,7 @@ export default function AdminGallery() {
                   {editTarget ? "Editar imagen" : "Nueva imagen"}
                 </h2>
                 <button
-                  onClick={() => setModalOpen(false)}
+                  onClick={closeModal}
                   className="text-stone-gray hover:text-navy transition-colors"
                 >
                   <X className="w-5 h-5" />
@@ -311,27 +305,6 @@ export default function AdminGallery() {
                   />
                 </div>
 
-                {/* Category */}
-                <div>
-                  <label className="block font-montserrat text-xs font-semibold text-navy mb-1">
-                    Categoría *
-                  </label>
-                  <select
-                    required
-                    value={form.category}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, category: e.target.value }))
-                    }
-                    className="w-full border border-stone-warm/50 rounded-sm px-3 py-2 font-montserrat text-sm text-navy focus:outline-none focus:border-navy bg-white"
-                  >
-                    {CATEGORY_OPTIONS.map((c) => (
-                      <option key={c.value} value={c.value}>
-                        {c.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
                 {/* Display order */}
                 <div>
                   <label className="block font-montserrat text-xs font-semibold text-navy mb-1">
@@ -355,55 +328,48 @@ export default function AdminGallery() {
                   </label>
 
                   {/* Preview */}
-                  {form.image_url && (
-                    <div className="mb-2 rounded-sm overflow-hidden border border-stone-warm/30 h-36">
+                  {(localPreview || form.image_url) && (
+                    <div className="mb-2 rounded-sm overflow-hidden border border-stone-warm/30 h-36 relative group">
                       <img
-                        src={assetUrl(form.image_url)}
+                        src={localPreview || assetUrl(form.image_url)}
                         alt="preview"
                         className="w-full h-full object-contain bg-stone-light"
                       />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          clearPending();
+                          setForm((f) => ({ ...f, image_url: "" }));
+                        }}
+                        className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   )}
 
-                  {/* Upload button */}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploading}
-                    className="flex items-center gap-2 w-full justify-center border-2 border-dashed border-stone-warm/50 hover:border-navy/40 rounded-sm py-3 font-montserrat text-sm text-stone-gray hover:text-navy transition-colors mb-2"
-                  >
-                    {uploading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Upload className="w-4 h-4" />
-                    )}
-                    {uploading ? "Subiendo..." : "Subir imagen"}
-                  </button>
+                  {/* Upload */}
+                  <label className="flex items-center gap-2 w-full justify-center border-2 border-dashed border-stone-warm/50 hover:border-navy/40 rounded-sm py-3 font-montserrat text-sm text-stone-gray hover:text-navy transition-colors mb-2 cursor-pointer">
+                    <Upload className="w-4 h-4" />
+                    {pendingFile ? pendingFile.name : "Subir imagen"}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={handleImageSelect}
+                    />
+                  </label>
 
                   {/* URL input */}
-                  <div className="flex gap-2">
-                    <input
-                      value={urlInput}
-                      onChange={(e) => setUrlInput(e.target.value)}
-                      onBlur={applyUrlInput}
-                      className="flex-1 border border-stone-warm/50 rounded-sm px-3 py-2 font-montserrat text-xs text-navy focus:outline-none focus:border-navy"
-                      placeholder="O pega una URL externa"
-                    />
-                    <button
-                      type="button"
-                      onClick={applyUrlInput}
-                      className="flex items-center gap-1 border border-stone-warm/50 rounded-sm px-3 py-2 font-montserrat text-xs text-navy hover:bg-stone-light transition-colors"
-                    >
-                      <Link2 className="w-3.5 h-3.5" /> Usar
-                    </button>
-                  </div>
+                  <input
+                    type="text"
+                    value={form.image_url}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, image_url: e.target.value }))
+                    }
+                    className="w-full border border-stone-warm/50 rounded-sm px-3 py-2 font-montserrat text-xs text-navy focus:outline-none focus:border-navy"
+                    placeholder="O pega una URL externa"
+                  />
                 </div>
 
                 {/* is_active */}
@@ -425,14 +391,14 @@ export default function AdminGallery() {
                 <div className="flex gap-3 pt-2">
                   <button
                     type="button"
-                    onClick={() => setModalOpen(false)}
+                    onClick={closeModal}
                     className="flex-1 border border-stone-warm/50 font-montserrat text-sm text-navy py-2 rounded-sm hover:bg-stone-light transition-colors"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    disabled={saving || uploading || !form.image_url}
+                    disabled={saving || (!pendingFile && !form.image_url)}
                     className="flex-1 bg-navy text-white font-montserrat text-sm py-2 rounded-sm hover:bg-opacity-90 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
                   >
                     {saving && <Loader2 className="w-4 h-4 animate-spin" />}

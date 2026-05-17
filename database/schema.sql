@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 16, 2026 at 02:58 AM
+-- Generation Time: May 17, 2026 at 04:40 PM
 -- Server version: 11.4.10-MariaDB-cll-lve
 -- PHP Version: 8.4.21
 
@@ -97,14 +97,14 @@ CREATE TABLE `amenities` (
 
 INSERT INTO `amenities` (`id`, `name`, `description`, `icon`, `image_url`, `category`, `type`, `show_in_gallery`, `is_active`, `display_order`, `created_at`, `updated_at`) VALUES
 (1, 'Pet Park & Pet Shower', 'Parque de mascotas con bebedero y secador de aire climatizado', 'paw-print', NULL, 'social', 'amenity', 0, 1, 1, '2026-05-15 21:22:08', '2026-05-15 21:22:08'),
-(2, 'Gym', 'Área de fitness y wellness con equipos de última generación', 'dumbbell', 'https://picsum.photos/seed/gym-liv/800/600', 'wellness', 'amenity', 1, 1, 2, '2026-05-15 21:22:08', '2026-05-15 21:47:08'),
-(3, 'Coworking & Sala de Juntas', 'Estaciones de trabajo colaborativo y sala de reuniones privada', 'laptop', 'https://picsum.photos/seed/cowork-liv/800/600', 'services', 'amenity', 1, 1, 3, '2026-05-15 21:22:08', '2026-05-15 21:47:08'),
-(4, 'Grill Zone', 'Espacios sociales con asadores para convivir con familia y amigos', 'flame', 'https://picsum.photos/seed/grill-liv/800/600', 'social', 'amenity', 1, 1, 4, '2026-05-15 21:22:08', '2026-05-15 21:47:08'),
+(2, 'Gym', 'Área de fitness y wellness con equipos de última generación', 'dumbbell', '/uploads/amenities/76a4357f00cf01f3de7684cf4ffe8744.png', 'wellness', 'amenity', 1, 1, 2, '2026-05-15 21:22:08', '2026-05-17 15:49:35'),
+(3, 'Coworking & Sala de Juntas', 'Estaciones de trabajo colaborativo y sala de reuniones privada', 'laptop', '/uploads/amenities/0859f71642a3ba26a2057868e4b00832.png', 'services', 'amenity', 1, 1, 3, '2026-05-15 21:22:08', '2026-05-17 15:49:54'),
+(4, 'Grill Zone', 'Espacios sociales con asadores para convivir con familia y amigos', 'flame', '/uploads/amenities/96f1d08f5dae8e0168ccf2e2bcf712bc.png', 'social', 'amenity', 1, 1, 4, '2026-05-15 21:22:08', '2026-05-17 15:50:06'),
 (5, 'Lavandería', 'Área de lavandería compartida con equipos de alta eficiencia', 'shirt', NULL, 'services', 'amenity', 0, 1, 5, '2026-05-15 21:22:08', '2026-05-15 21:22:08'),
 (6, 'Playground', 'Zona de juegos segura para los más pequeños', 'baby', NULL, 'social', 'amenity', 0, 1, 6, '2026-05-15 21:22:08', '2026-05-15 21:22:08'),
 (7, 'Salón de Juego para Jóvenes', 'Área de entretenimiento y juegos para adolescentes y adultos', 'gamepad-2', NULL, 'social', 'amenity', 0, 1, 7, '2026-05-15 21:22:08', '2026-05-15 21:22:08'),
 (8, 'Sala de Lectura', 'Biblioteca tranquila y espacio de lectura con buena iluminación', 'book-open', NULL, 'social', 'amenity', 0, 1, 8, '2026-05-15 21:22:08', '2026-05-15 21:22:08'),
-(9, 'Sala Lounge', 'Área de descanso y convivencia con diseño contemporáneo', 'coffee', 'https://picsum.photos/seed/lounge-liv/800/600', 'social', 'amenity', 1, 1, 9, '2026-05-15 21:22:08', '2026-05-15 21:47:08'),
+(9, 'Sala Lounge', 'Área de descanso y convivencia con diseño contemporáneo', 'coffee', '/uploads/amenities/73bd397ecd2afb2c893b82492e0f069c.png', 'social', 'amenity', 1, 1, 9, '2026-05-15 21:22:08', '2026-05-17 16:27:25'),
 (10, 'Área de Amacas', 'Espacio de relajación exterior con hamacas y jardín', 'sunset', NULL, 'wellness', 'amenity', 0, 1, 10, '2026-05-15 21:22:08', '2026-05-15 21:22:08'),
 (11, 'Sharing Room', 'Espacio compartido multifuncional para la comunidad de residentes', 'users', NULL, 'social', 'amenity', 0, 1, 11, '2026-05-15 21:22:08', '2026-05-15 21:22:08'),
 (12, 'Espacios Comunes Premium', 'Gimnasio // Pet Park // Coworking // Playground niños // Salón de juegos adultos // Sala de lectura // Sala Lounge // Área de hamacas // Sharing room', 'building-2', NULL, 'services', 'facility', 0, 1, 1, '2026-05-15 21:22:08', '2026-05-15 21:22:08'),
@@ -387,6 +387,29 @@ CREATE TABLE `gallery_images` (
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `gallery_images`
+--
+
+INSERT INTO `gallery_images` (`id`, `title`, `description`, `image_url`, `category`, `display_order`, `is_active`, `created_at`) VALUES
+(1, 'Cocina Modelo CT', NULL, '/uploads/gallery/35304a7442ab688563efc6d6234acdb0.jpg', 'arquitectura', 0, 1, '2026-05-17 16:28:15'),
+(2, 'Escritorio Modelo CT', NULL, '/uploads/gallery/b429d8576d722870c4974e2253bf911d.jpg', 'arquitectura', 0, 1, '2026-05-17 16:29:00'),
+(3, 'Recamara Escritorio Modelo CT', NULL, '/uploads/gallery/e0256a485238a5d94ad70e94e4d4564f.jpg', 'arquitectura', 0, 1, '2026-05-17 16:29:26'),
+(4, 'Recamara Modelo CT', NULL, '/uploads/gallery/843e7d5b3a9efb1b596379687e6587d0.jpg', 'arquitectura', 0, 1, '2026-05-17 16:29:38'),
+(5, 'Terraza Modelo CT', NULL, '/uploads/gallery/b7e53e6f75189ad29e97f279597dca3b.jpg', 'arquitectura', 0, 1, '2026-05-17 16:29:58'),
+(6, 'Cocina Modelo F', NULL, '/uploads/gallery/269b8c382447af14a3f0474f01710490.jpg', 'arquitectura', 0, 1, '2026-05-17 16:30:58'),
+(7, 'Recamara Modelo F', NULL, '/uploads/gallery/f9cf7417756aaa806c484441e32276a2.jpg', 'arquitectura', 0, 1, '2026-05-17 16:31:13'),
+(8, 'Sala Modelo F', NULL, '/uploads/gallery/41409eebd638865f9058c5663c5a77cb.jpg', 'arquitectura', 0, 1, '2026-05-17 16:31:26'),
+(9, 'Baño Modelo I', NULL, '/uploads/gallery/46c95c857d607c08780bef223ad70f79.jpg', 'arquitectura', 0, 1, '2026-05-17 16:31:45'),
+(10, 'Lavado Modelo J', NULL, '/uploads/gallery/fcabcb6360c70bde31168f95a8c7feb1.jpg', 'arquitectura', 0, 1, '2026-05-17 16:32:09'),
+(11, 'Recamara Escritorio Modelo J', NULL, '/uploads/gallery/3760a9f09c0f24cfdc0a7280a9890f86.jpg', 'arquitectura', 0, 1, '2026-05-17 16:32:44'),
+(12, 'Recamara Modelo J', NULL, '/uploads/gallery/3c8297b37e2edc050faba8942209cc07.jpg', 'arquitectura', 0, 1, '2026-05-17 16:32:57'),
+(13, 'Sala Escritorio Modelo J', NULL, '/uploads/gallery/c6f41945747c78c584de7901c3a1ba7a.jpg', 'arquitectura', 0, 1, '2026-05-17 16:33:13'),
+(14, 'Sala Comedor Modelo J', NULL, '/uploads/gallery/91330009ce56dc7214dacb85c1f4fd50.jpg', 'arquitectura', 0, 1, '2026-05-17 16:33:28'),
+(15, 'Cocina Modelo M', NULL, '/uploads/gallery/dc97350b15000e2471fbdd134b6a0752.jpg', 'arquitectura', 0, 1, '2026-05-17 16:33:52'),
+(16, 'Recamara Escritorio Modelo M', NULL, '/uploads/gallery/1b9266f82846c7bcd0a0df5e9539c9ac.jpg', 'arquitectura', 0, 1, '2026-05-17 16:34:08'),
+(17, 'Recamara Modelo M', NULL, '/uploads/gallery/d37f5f860e52c64a80e72b9e889a5cc5.jpg', 'arquitectura', 0, 1, '2026-05-17 16:34:20');
 
 -- --------------------------------------------------------
 
@@ -899,7 +922,7 @@ ALTER TABLE `email_logs`
 -- AUTO_INCREMENT for table `gallery_images`
 --
 ALTER TABLE `gallery_images`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `gallery_items`

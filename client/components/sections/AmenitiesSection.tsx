@@ -1,74 +1,16 @@
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
-import {
-  Leaf,
-  Dumbbell,
-  Wine,
-  Users,
-  Zap,
-  Wifi,
-  ParkingCircle,
-  Shield,
-  Waves,
-  Sunset,
-  Sparkles,
-  Laptop,
-  Film,
-  Baby,
-  Building2,
-  Car,
-  Package,
-  PawPrint,
-  Flame,
-  Shirt,
-  BookOpen,
-  Coffee,
-  Briefcase,
-  Maximize2,
-  Smartphone,
-  Gamepad2,
-  type LucideIcon,
-} from "lucide-react";
+import { type LucideIcon } from "lucide-react";
+import { getAmenityIcon } from "@/lib/amenityIcons";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchAmenities,
   type PublicAmenity,
 } from "@/store/slices/amenitiesSlice";
 
-// Map of icon name strings → components
-const ICON_MAP: Record<string, LucideIcon> = {
-  leaf: Leaf,
-  dumbbell: Dumbbell,
-  wine: Wine,
-  users: Users,
-  zap: Zap,
-  wifi: Wifi,
-  "parking-circle": ParkingCircle,
-  shield: Shield,
-  waves: Waves,
-  sunset: Sunset,
-  sparkles: Sparkles,
-  laptop: Laptop,
-  film: Film,
-  baby: Baby,
-  "building-2": Building2,
-  car: Car,
-  package: Package,
-  "paw-print": PawPrint,
-  "shield-check": Shield,
-  flame: Flame,
-  shirt: Shirt,
-  "book-open": BookOpen,
-  coffee: Coffee,
-  briefcase: Briefcase,
-  "maximize-2": Maximize2,
-  smartphone: Smartphone,
-  "gamepad-2": Gamepad2,
-};
-
 function getIcon(name: string | null): LucideIcon {
-  return (name ? ICON_MAP[name] : null) ?? Sparkles;
+  return getAmenityIcon(name);
 }
 
 // ─── Amenity icon card ────────────────────────────────────────────────────────
