@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Waves, Wind, Sun, Apple, Zap, Trees } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const features = [
   {
@@ -42,10 +43,14 @@ const features = [
 ];
 
 export default function ArchitecturalDetailsSection() {
+  const isMobile = useIsMobile();
   const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true,
   });
+
+  const still = { opacity: 1, y: 0 };
+  const hidden = { opacity: 0, y: 20 };
 
   return (
     <section className="py-20 md:py-32 px-6 bg-white">
@@ -53,8 +58,8 @@ export default function ArchitecturalDetailsSection() {
         {/* Title */}
         <motion.div
           ref={ref}
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          initial={isMobile ? still : hidden}
+          animate={isMobile ? still : inView ? still : hidden}
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
@@ -73,9 +78,12 @@ export default function ArchitecturalDetailsSection() {
               <motion.div
                 key={index}
                 ref={ref}
-                initial={{ opacity: 0, y: 20 }}
-                animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                initial={isMobile ? still : hidden}
+                animate={isMobile ? still : inView ? still : hidden}
+                transition={{
+                  duration: 0.6,
+                  delay: isMobile ? 0 : index * 0.1,
+                }}
                 className="p-8 bg-white rounded-sm border border-stone-warm/30 hover:border-sand hover:shadow-lg transition-all duration-300 group"
               >
                 <div className="w-12 h-12 rounded-sm bg-navy flex items-center justify-center mb-6 group-hover:bg-sand transition-colors duration-300">
@@ -94,9 +102,9 @@ export default function ArchitecturalDetailsSection() {
 
         {/* Specification Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          initial={isMobile ? still : hidden}
+          animate={isMobile ? still : inView ? still : hidden}
+          transition={{ duration: 0.8, delay: isMobile ? 0 : 0.4 }}
           className="bg-white p-12 md:p-16 rounded-sm border border-stone-warm/30"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">

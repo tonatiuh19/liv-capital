@@ -71,14 +71,14 @@ export default function HeroSection() {
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="w-full md:w-1/2 flex flex-col justify-center items-start px-6 md:px-12 lg:px-16 py-20 md:py-0"
+          className="flex-1 md:flex-none w-full md:w-1/2 relative z-10 flex flex-col justify-end md:justify-center items-start px-6 md:px-12 lg:px-16 pb-12 md:pb-0 md:py-0"
         >
           {/* Accent line */}
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: 60 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="h-1 bg-sand mb-8"
+            className="h-1 bg-sand mb-5 md:mb-8"
           />
 
           {/* Category label */}
@@ -86,17 +86,17 @@ export default function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-sand font-montserrat font-medium text-sm uppercase tracking-widest mb-6"
+            className="text-sand font-montserrat font-medium text-sm uppercase tracking-widest mb-4 md:mb-6"
           >
             Vivienda Vertical Luxury
           </motion.span>
 
           {/* Rotating headline — word-by-word slot machine */}
-          <div className="overflow-hidden mb-6 min-h-[7rem] md:min-h-[8rem] lg:min-h-[9.5rem] flex items-start">
+          <div className="overflow-hidden mb-4 md:mb-6 min-h-[5rem] md:min-h-[8rem] lg:min-h-[9.5rem] flex items-start">
             <AnimatePresence mode="wait">
               <motion.h1
                 key={headlineIndex}
-                className="text-4xl md:text-5xl lg:text-6xl font-montserrat font-bold text-navy leading-tight flex flex-wrap gap-x-[0.28em] gap-y-1"
+                className="text-4xl md:text-5xl lg:text-6xl font-montserrat font-bold text-white md:text-navy leading-tight flex flex-wrap gap-x-[0.28em] gap-y-1"
               >
                 {headlines[headlineIndex].split(" ").map((word, i) => (
                   <span
@@ -124,7 +124,7 @@ export default function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-lg md:text-lg text-text-secondary font-montserrat font-light leading-relaxed mb-10 max-w-md"
+            className="text-base md:text-lg text-white/80 md:text-text-secondary font-montserrat font-light leading-relaxed mb-6 md:mb-10 max-w-md"
           >
             Ubicado en el corazón de Guadalajara, LIV CAPITAL redefine la
             vivienda urbana de lujo con arquitectura contemporánea y espacios
@@ -136,29 +136,29 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="flex gap-8 md:gap-12 mb-10 pb-10 border-b border-stone-warm/30"
+            className="flex gap-8 md:gap-12 mb-6 md:mb-10 pb-6 md:pb-10 border-b border-white/20 md:border-stone-warm/30"
           >
             <div>
-              <div className="text-3xl md:text-4xl font-montserrat font-extrabold text-navy">
+              <div className="text-3xl md:text-4xl font-montserrat font-extrabold text-white md:text-navy">
                 8
               </div>
-              <p className="text-sm text-text-secondary font-montserrat font-light">
+              <p className="text-sm text-white/70 md:text-text-secondary font-montserrat font-light">
                 Plantas
               </p>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-montserrat font-extrabold text-navy">
+              <div className="text-3xl md:text-4xl font-montserrat font-extrabold text-white md:text-navy">
                 125+
               </div>
-              <p className="text-sm text-text-secondary font-montserrat font-light">
+              <p className="text-sm text-white/70 md:text-text-secondary font-montserrat font-light">
                 Departamentos
               </p>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-montserrat font-extrabold text-navy">
+              <div className="text-3xl md:text-4xl font-montserrat font-extrabold text-white md:text-navy">
                 12
               </div>
-              <p className="text-sm text-text-secondary font-montserrat font-light">
+              <p className="text-sm text-white/70 md:text-text-secondary font-montserrat font-light">
                 Amenidades
               </p>
             </div>
@@ -173,14 +173,14 @@ export default function HeroSection() {
           >
             <a
               href="#modelos"
-              className="flex items-center justify-center gap-2 px-8 py-4 bg-navy text-white font-montserrat font-medium rounded-sm hover:bg-opacity-90 transition-all duration-300 group"
+              className="flex items-center justify-center gap-2 px-8 py-4 bg-white text-navy md:bg-navy md:text-white font-montserrat font-medium rounded-sm hover:opacity-90 transition-all duration-300 group"
             >
               Explorar Modelos
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </a>
             <Link
               to="/agendar-visita"
-              className="flex items-center justify-center gap-2 px-8 py-4 border-2 border-navy text-navy font-montserrat font-medium rounded-sm hover:bg-navy hover:text-white transition-all duration-300"
+              className="flex items-center justify-center gap-2 px-8 py-4 border-2 border-white text-white md:border-navy md:text-navy font-montserrat font-medium rounded-sm hover:bg-white hover:text-navy md:hover:bg-navy md:hover:text-white transition-all duration-300"
             >
               Agendar Visita
             </Link>
@@ -191,37 +191,21 @@ export default function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.7 }}
-            className="text-xs text-text-secondary font-montserrat font-light mt-8"
+            className="text-xs text-white/60 md:text-text-secondary font-montserrat font-light mt-6 md:mt-8"
           >
             Por Capital Urbano • Disponible ahora
           </motion.p>
         </motion.div>
       </div>
 
-      {/* Mobile image overlay */}
-      <div className="absolute inset-0 md:hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-navy/40 via-navy/20 to-white" />
-        <svg
-          className="absolute inset-0 w-full h-full opacity-10"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <pattern
-              id="gridMobile"
-              width="40"
-              height="40"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M 40 0 L 0 0 0 40"
-                fill="none"
-                stroke="#D9B99B"
-                strokeWidth="0.5"
-              />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#gridMobile)" />
-        </svg>
+      {/* Mobile image background */}
+      <div className="absolute inset-0 md:hidden z-0">
+        <img
+          src="/images/Torre_Kino_Frontal_Peatonal.jpg"
+          alt="Torre LIV Capital"
+          className="absolute inset-0 w-full h-full object-cover object-top"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy/95 via-navy/65 to-navy/25" />
       </div>
     </section>
   );

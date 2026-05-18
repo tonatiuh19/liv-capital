@@ -308,9 +308,6 @@ function Gallery({ model }: { model: PublicModel }) {
         />
       </AnimatePresence>
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent pointer-events-none" />
-
       {/* Nav arrows */}
       {allImages.length > 1 && (
         <>

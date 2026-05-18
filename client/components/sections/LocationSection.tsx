@@ -328,8 +328,7 @@ function MapPanel({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.22 }}
-            className="absolute bottom-5 left-1/2 -translate-x-1/2 z-[1000] bg-navy text-white rounded-sm shadow-2xl border border-sand/40"
-            style={{ minWidth: 270 }}
+            className="absolute bottom-5 left-3 right-3 lg:left-1/2 lg:right-auto lg:-translate-x-1/2 lg:min-w-[270px] z-[1000] bg-navy text-white rounded-sm shadow-2xl border border-sand/40"
           >
             {/* POI name header */}
             <div className="flex items-center gap-2 px-4 pt-3 pb-2 border-b border-white/10">
